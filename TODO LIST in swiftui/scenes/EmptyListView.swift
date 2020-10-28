@@ -24,19 +24,28 @@ struct EmptyListView: View {
         "Each night schedule for tomorrow."
     ]
     
+    //for changing theme color
+    let themes:[Theme] = themeData
+    @ObservedObject var themeSetting=ThemeSettings()
+    
     
     var body: some View {
         ZStack {
             VStack {
                 Image(images.randomElement() ?? images[0])
+                    .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
                     .frame(minWidth: 256, idealWidth: 280, maxWidth: 360, minHeight: 256, idealHeight: 280, maxHeight: 360)
                     .layoutPriority(1)
+                    .foregroundColor(themes[themeSetting.themeSettings].themeColor)
+                    
+                
                 
                 Text(tips.randomElement() ?? tips[0] )
                     .layoutPriority(0.5)
                     .font(.system(.headline, design: .rounded))
+                    .foregroundColor(themes[themeSetting.themeSettings].themeColor)
             }
             .padding(.horizontal)
             .opacity(isAnimated ? 1 : 0)
@@ -55,6 +64,6 @@ struct EmptyListView: View {
 struct EmptyListView_Previews: PreviewProvider {
     static var previews: some View {
         EmptyListView()
-            .environment(\.colorScheme, .dark)
+//            .environment(\.colorScheme, .dark)
     }
 }

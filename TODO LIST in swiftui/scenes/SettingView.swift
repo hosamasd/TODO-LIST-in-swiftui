@@ -12,6 +12,11 @@ struct SettingView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
+    @State var isThemeChange=false
+    let themes:[Theme] = themeData
+    @ObservedObject var themeSetting=ThemeSettings()
+    
+    
     var body: some View {
         NavigationView{
             
@@ -41,7 +46,7 @@ struct SettingView: View {
                                
                                , content: /*@START_MENU_TOKEN@*/{
                                 ForEach(0..<iconsSettings.iconNames.count) {index in
-                                   
+                                    
                                     HStack {
                                         Image(uiImage: UIImage(named: self.iconsSettings.iconNames[index] ) ?? UIImage())
                                             .renderingMode(.original)
@@ -74,6 +79,44 @@ struct SettingView: View {
                             })
                     }
                     .padding(.vertical,3)
+                    
+                    
+                    //MARK:SECTION2
+                    Section(header:
+                                HStack {
+                                    Text("Choose the app theme")
+                                    Image(systemName:"circle.fill")
+                                        .resizable()
+                                        .frame(width:10,height:10)
+                                        .foregroundColor(themes[self.themeSetting.themeSettings].themeColor)
+                                }
+                    ){
+                        List {
+                            ForEach(themes,id:\.id) {theme in
+                                Button (action: {
+                                    self.themeSetting.themeSettings = theme.id
+                                    UserDefaults.standard.set(self.themeSetting.themeSettings, forKey: "Theme")
+                                    self.isThemeChange.toggle()
+                                    
+                                }){
+                                    HStack {
+                                        Image(systemName:"circle.fill")
+                                            .foregroundColor(theme.themeColor)
+                                        Text(theme.name)
+                                    }
+                                }
+                                .accentColor(Color.primary)
+                            }
+                        }
+                    }
+                    .padding(.vertical,3)
+                    .alert(isPresented:$isThemeChange) {
+                        Alert(
+                            title:Text("Success"),
+                            message:Text("App has been chenged to the \(themes[themeSetting.themeSettings].name). now close and restart it"),
+                            dismissButton:.default(Text("OK"))
+                        )
+                    }
                     
                     Section(header: Text("Follow us on social media")){
                         FormRowLinkView(icon: "globe", color: Color.pink, text: "Facebook", link: "https://www.facebook.com/hosammohamedasd/")
@@ -113,6 +156,8 @@ struct SettingView: View {
             .background(Color.white)
             .edgesIgnoringSafeArea(.all)
         }
+        .accentColor(self.themes[themeSetting.themeSettings].themeColor)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

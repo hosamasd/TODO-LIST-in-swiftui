@@ -17,16 +17,34 @@ struct ContentView: View {
     @State private var animateButton=false
     @State private var showSettingViews=false
     
+    //for changing theme color
+    let themes:[Theme] = themeData
+    @ObservedObject var themeSetting=ThemeSettings()
+    
     var body: some View {
         NavigationView  {
             ZStack {
                 List {
                     ForEach(self.todos) {todo in
                         HStack{
+                            Circle()
+                                .frame(width:12,height:12,alignment:.center)
+                                .foregroundColor(self.colorize(priority: todo.priority ?? "Normal"))
                             Text(todo.name ?? "UNKNOWN")
+                                .fontWeight(.bold )
                             Spacer()
+                            
                             Text(todo.priority ?? "UNKNOWN")
+                                .font(.footnote)
+                                .foregroundColor(Color(UIColor.systemGray2))
+                                .padding(3)
+                                .frame(minWidth:62)
+                                .overlay(
+                                Capsule()
+                                    .stroke(Color(UIColor.systemGray2),lineWidth:0.75)
+                                )
                         }
+                        .padding(.vertical,10)
                         
                     }
                     .onDelete(perform:deleteTodo)
@@ -48,6 +66,7 @@ struct ContentView: View {
                             //                                .environment(\.managedObjectContext, self.managedObjectContext)
                         })
                 )
+                .accentColor(themes[self.themeSetting.themeSettings].themeColor)
                 
                 if todos.count == 0 {
                     EmptyListView()
@@ -61,12 +80,12 @@ struct ContentView: View {
                 ZStack {
                     Group{
                         Circle()
-                            .fill(Color.blue)
+                            .fill(themes[self.themeSetting.themeSettings].themeColor)
                             .opacity(self.animateButton ?  0.2 : 0)
                             .scaleEffect(self.animateButton ? 1 : 0)
                             .frame(width: 68, height: 68, alignment: .center)
                         Circle()
-                            .fill(Color.blue)
+                            .fill(themes[self.themeSetting.themeSettings].themeColor)
                             .opacity(self.animateButton ? 0.15 : 0)
                             .scaleEffect(self.animateButton ? 1 : 0)
                             
@@ -83,6 +102,8 @@ struct ContentView: View {
                             .scaledToFit().background(Circle().fill(Color("ColorBase")))
                             .frame(width: 48, height: 48, alignment: .center)
                     }
+                    .accentColor(themes[self.themeSetting.themeSettings].themeColor)
+                    
                     .onAppear(perform: {
                         self.animateButton.toggle()
                     })
@@ -93,7 +114,8 @@ struct ContentView: View {
             )
             
         }
-        
+        .accentColor(themes[self.themeSetting.themeSettings].themeColor)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     private func deleteTodo(at offsets:IndexSet){
@@ -107,6 +129,10 @@ struct ContentView: View {
                 print(error)
             }
         }
+    }
+    
+    private func colorize( priority:String) ->Color{
+        return priority == "Hight" ? .pink : priority == "Normal" ? .green :  priority == "Normal" ? .blue : .gray
     }
     
 }

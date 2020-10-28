@@ -21,6 +21,9 @@ struct AddTodoView: View {
     
     let priorites = ["High","Normal","Low"]
     
+    //for changing theme color
+    let themes:[Theme] = themeData
+    @ObservedObject var themeSetting=ThemeSettings()
     
     var body: some View {
         NavigationView{
@@ -63,7 +66,7 @@ struct AddTodoView: View {
                             .font(.system(size: 24, weight: .bold, design: .default))
                             .padding()
                             .frame(minWidth: 0, idealWidth: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/, maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(themes[self.themeSetting.themeSettings].themeColor)
                             .cornerRadius(9)
                             .foregroundColor(Color.white)
                     })
@@ -86,6 +89,8 @@ struct AddTodoView: View {
                 Alert(title: Text(errorTitle), message: Text(errorMessage), dismissButton: .default(Text("Ok")))
             })
         }
+        .accentColor(themes[self.themeSetting.themeSettings].themeColor)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
